@@ -217,7 +217,7 @@
 
                try {
         const payloadString = encodeURIComponent(JSON.stringify(payload));
-        const response = await fetch(`${APPS_SCRIPT_URL}?action=submit&payload=${payloadString}`);
+        const response = await fetch(APPS_SCRIPT_URL + "?action=submit&payload=" + payloadString);
         const res = await response.json();
         if (res.success) {
           resultDiv.className = "mt-6 p-4 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-800";
