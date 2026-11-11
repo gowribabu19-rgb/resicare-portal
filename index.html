@@ -4,203 +4,63 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Green Valley Apartments - Resident Desk</title>
-  <!-- Tailwind CSS CDN for modern UI -->
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 <body class="bg-slate-50 min-h-screen text-slate-800 font-sans">
-
-  <!-- TOP HEADER -->
   <header class="bg-indigo-700 text-white shadow-md">
     <div class="max-w-4xl mx-auto px-4 py-6 flex flex-col md:flex-row justify-between items-center">
       <div class="flex items-center gap-3">
         <i class="fa-solid fa-building-user text-3xl text-indigo-200"></i>
         <div>
           <h1 class="text-2xl font-bold tracking-tight">Green Valley Apartments</h1>
-          <p class="text-indigo-200 text-sm">Smart Resident Portal & Service Desk</p>
+          <p class="text-indigo-200 text-sm">Smart Resident Portal</p>
         </div>
-      </div>
-      <div class="mt-4 md:mt-0 text-sm bg-indigo-800 px-3 py-1.5 rounded-lg text-indigo-100 flex items-center gap-2">
-        <i class="fa-solid fa-phone"></i> Emergency Helpline: <span class="font-semibold">+1-555-0100</span>
       </div>
     </div>
   </header>
-
-  <!-- LIVE INCIDENT BANNER -->
-  <div id="incidentBanner" class="hidden bg-amber-500 text-white shadow-inner">
-    <div class="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
-      <div class="flex items-center gap-3">
-        <i class="fa-solid fa-triangle-exclamation text-2xl animate-pulse"></i>
-        <div>
-          <span class="font-bold uppercase tracking-wider text-xs bg-amber-700 px-2 py-0.5 rounded mr-2">Outage Alert</span>
-          <span id="bannerText" class="font-medium text-sm">Loading active notices...</span>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- MAIN CONTAINER -->
   <main class="max-w-4xl mx-auto px-4 py-8">
-
-    <!-- TABS -->
-    <div class="flex border-b border-slate-200 mb-6 bg-white rounded-t-xl shadow-sm overflow-hidden">
-      <button id="tabRaiseBtn" onclick="switchTab('raise')" class="flex-1 py-4 text-center font-semibold text-indigo-600 border-b-2 border-indigo-600 bg-indigo-50/50 flex items-center justify-center gap-2">
-        <i class="fa-solid fa-pen-to-square"></i> Raise Ticket
-      </button>
-      <button id="tabTrackBtn" onclick="switchTab('track')" class="flex-1 py-4 text-center font-semibold text-slate-500 hover:text-indigo-600 border-b-2 border-transparent flex items-center justify-center gap-2">
-        <i class="fa-solid fa-magnifying-glass"></i> Track Status
-      </button>
-    </div>
-
-    <!-- TAB 1: RAISE TICKET FORM -->
-    <div id="sectionRaise" class="bg-white p-6 md:p-8 rounded-xl shadow-sm border border-slate-100">
-      <h2 class="text-xl font-bold mb-1 text-slate-800">Submit Service Request</h2>
-      <p class="text-slate-500 text-sm mb-6">Report a maintenance or service issue in your apartment.</p>
-
+    <div class="bg-white p-6 md:p-8 rounded-xl shadow-sm border border-slate-100">
+      <h2 class="text-xl font-bold mb-6 text-slate-800">Submit Service Request</h2>
       <form id="ticketForm" onsubmit="handleFormSubmit(event)">
-        
-        <!-- Honeypot Field (Security against spam bots) -->
-        <input type="text" name="website_hp" id="website_hp" class="hidden" tabindex="-1" autocomplete="off">
-
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-          <div>
-            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">Full Name *</label>
-            <input type="text" id="name" required class="w-full border border-slate-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
-          </div>
-          <div>
-            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">Email Address *</label>
-            <input type="email" id="email" required class="w-full border border-slate-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
-          </div>
+          <input type="text" id="name" required placeholder="Full Name" class="border p-2.5 rounded-lg text-sm">
+          <input type="email" id="email" required placeholder="Email" class="border p-2.5 rounded-lg text-sm">
         </div>
-
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-          <div>
-            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">Phone Number *</label>
-            <input type="tel" id="phone" required placeholder="+1 555-0000" class="w-full border border-slate-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
-          </div>
-          <div>
-            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">Block *</label>
-            <select id="block" required class="w-full border border-slate-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none bg-white">
-              <option value="">Select Block</option>
-              <option value="Block A">Block A</option>
-              <option value="Block B">Block B</option>
-              <option value="Block C">Block C</option>
-            </select>
-          </div>
-          <div>
-            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">Flat Number *</label>
-            <input type="text" id="flat" required placeholder="e.g. 402" class="w-full border border-slate-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
-          </div>
+          <input type="tel" id="phone" required placeholder="Phone" class="border p-2.5 rounded-lg text-sm">
+          <select id="block" required class="border p-2.5 rounded-lg text-sm bg-white">
+            <option value="Block A">Block A</option>
+            <option value="Block B">Block B</option>
+            <option value="Block C">Block C</option>
+          </select>
+          <input type="text" id="flat" required placeholder="Flat #" class="border p-2.5 rounded-lg text-sm">
         </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-          <div>
-            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">Category *</label>
-            <select id="category" required class="w-full border border-slate-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none bg-white">
-              <option value="">Select Category</option>
-              <option value="Plumbing">Plumbing</option>
-              <option value="Electrical">Electrical</option>
-              <option value="Carpentry">Carpentry</option>
-              <option value="General Maintenance">General Maintenance</option>
-              <option value="Security & Safety">Security & Safety</option>
-            </select>
-          </div>
-          <div>
-            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">Urgency *</label>
-            <select id="urgency" required class="w-full border border-slate-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none bg-white">
-              <option value="Low">Low (Can wait standard SLA)</option>
-              <option value="Medium" selected>Medium (Normal attention)</option>
-              <option value="High">High (Urgent resolution needed)</option>
-              <option value="Critical">Critical (Immediate danger/hazard)</option>
-            </select>
-          </div>
-          <div>
-            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">Preferred Contact</label>
-            <select id="contactMethod" class="w-full border border-slate-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none bg-white">
-              <option value="Email">Email</option>
-              <option value="Phone">Phone Call</option>
-              <option value="Both">Both Email & Phone</option>
-            </select>
-          </div>
+        <select id="category" required class="w-full border p-2.5 rounded-lg text-sm bg-white mb-4">
+          <option value="Plumbing">Plumbing</option>
+          <option value="Electrical">Electrical</option>
+          <option value="Carpentry">Carpentry</option>
+          <option value="General Maintenance">General Maintenance</option>
+        </select>
+        <textarea id="description" required placeholder="Issue description..." class="w-full border p-2.5 rounded-lg text-sm mb-4"></textarea>
+        <div class="p-4 bg-slate-50 border rounded-lg mb-6">
+          <label class="block text-xs font-bold mb-1">Access Code (RESICARE2026)</label>
+          <input type="password" id="accessCode" required class="border p-2 rounded-lg w-full">
         </div>
-
-        <div class="mb-4">
-          <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">Description of Issue *</label>
-          <textarea id="description" required rows="3" placeholder="Please describe the issue in detail..." class="w-full border border-slate-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none"></textarea>
-        </div>
-
-        <div class="mb-6 p-4 bg-slate-50 border border-slate-200 rounded-lg">
-          <label class="block text-xs font-bold uppercase tracking-wider text-indigo-700 mb-1">Resident Access Code *</label>
-          <input type="password" id="accessCode" required placeholder="Enter resident security code" class="w-full md:w-1/2 border border-slate-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
-          <p class="text-xs text-slate-500 mt-1">Provided by Green Valley Management office.</p>
-        </div>
-
-        <button type="submit" id="submitBtn" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-lg transition duration-200 flex items-center justify-center gap-2">
-          <i class="fa-solid fa-paper-plane"></i> Submit Request
-        </button>
-
+        <button type="submit" id="submitBtn" class="w-full bg-indigo-600 text-white font-bold py-3 rounded-lg">Submit Request</button>
       </form>
-
-      <!-- SUBMIT RESULT ALERT -->
       <div id="submitResult" class="hidden mt-6 p-4 rounded-lg"></div>
     </div>
-
-    <!-- TAB 2: TRACK STATUS -->
-    <div id="sectionTrack" class="hidden bg-white p-6 md:p-8 rounded-xl shadow-sm border border-slate-100">
-      <h2 class="text-xl font-bold mb-1 text-slate-800">Track Ticket Progress</h2>
-      <p class="text-slate-500 text-sm mb-6">Enter your Request ID (e.g., AFM-2026-0001) to view status.</p>
-
-      <div class="flex flex-col md:flex-row gap-3 mb-6">
-        <input type="text" id="trackInput" placeholder="AFM-2026-0001" class="flex-1 border border-slate-300 rounded-lg p-3 uppercase font-mono tracking-wider focus:ring-2 focus:ring-indigo-500 focus:outline-none">
-        <button onclick="trackTicket()" id="trackBtn" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-lg transition duration-200 flex items-center justify-center gap-2">
-          <i class="fa-solid fa-magnifying-glass"></i> Track Ticket
-        </button>
-      </div>
-
-      <!-- TRACK RESULT DISPLAY -->
-      <div id="trackResult" class="hidden border border-slate-200 rounded-lg p-6 bg-slate-50"></div>
-    </div>
-
   </main>
-
   <script>
-    // ⚠️ REPLACE THIS WITH YOUR DEPLOYED GOOGLE APPS SCRIPT WEB APP URL
-    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzAOBXE6uRZ58kzKe_LBozmDyIN_e0CrJUuwE6RlwwMZ5r0Q1uPQ9h05PKr0GkqlvVL/exec";
-
-    // Initialize Banner on page load
-    window.addEventListener('DOMContentLoaded', fetchActiveBanner);
-
-    function switchTab(tab) {
-      const raiseSection = document.getElementById('sectionRaise');
-      const trackSection = document.getElementById('sectionTrack');
-      const raiseBtn = document.getElementById('tabRaiseBtn');
-      const trackBtn = document.getElementById('tabTrackBtn');
-
-      if (tab === 'raise') {
-        raiseSection.classList.remove('hidden');
-        trackSection.classList.add('hidden');
-        raiseBtn.className = "flex-1 py-4 text-center font-semibold text-indigo-600 border-b-2 border-indigo-600 bg-indigo-50/50 flex items-center justify-center gap-2";
-        trackBtn.className = "flex-1 py-4 text-center font-semibold text-slate-500 hover:text-indigo-600 border-b-2 border-transparent flex items-center justify-center gap-2";
-      } else {
-        raiseSection.classList.add('hidden');
-        trackSection.classList.remove('hidden');
-        trackBtn.className = "flex-1 py-4 text-center font-semibold text-indigo-600 border-b-2 border-indigo-600 bg-indigo-50/50 flex items-center justify-center gap-2";
-        raiseBtn.className = "flex-1 py-4 text-center font-semibold text-slate-500 hover:text-indigo-600 border-b-2 border-transparent flex items-center justify-center gap-2";
-      }
-    }
+    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycby1bJQ7BcVFEzxBF9I6DO0gfqyX3c7lJrdMgPMcWZFRVrNPf5z7RCUm-pdt9zHbsC_S/exec";
 
     async function handleFormSubmit(e) {
       e.preventDefault();
-      
-      // Bot check
-      if (document.getElementById('website_hp').value) return;
-
-      const submitBtn = document.getElementById('submitBtn');
-      const resultDiv = document.getElementById('submitResult');
-      
-      submitBtn.disabled = true;
-      submitBtn.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> Submitting...`;
-      resultDiv.classList.add('hidden');
+      const btn = document.getElementById('submitBtn');
+      const resDiv = document.getElementById('submitResult');
+      btn.disabled = true;
+      btn.innerText = "Submitting...";
 
       const payload = {
         name: document.getElementById('name').value,
@@ -209,103 +69,30 @@
         block: document.getElementById('block').value,
         flat: document.getElementById('flat').value,
         category: document.getElementById('category').value,
-        urgency: document.getElementById('urgency').value,
-        contactMethod: document.getElementById('contactMethod').value,
         description: document.getElementById('description').value,
         accessCode: document.getElementById('accessCode').value
       };
 
-               try {
-        const payloadString = encodeURIComponent(JSON.stringify(payload));
-        const response = await fetch(APPS_SCRIPT_URL + "?action=submit&payload=" + payloadString);
+      try {
+        const finalUrl = APPS_SCRIPT_URL + "?action=submit&payload=" + encodeURIComponent(JSON.stringify(payload));
+        const response = await fetch(finalUrl);
         const res = await response.json();
+
         if (res.success) {
-          resultDiv.className = "mt-6 p-4 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-800";
-          resultDiv.innerHTML = `
-            <div class="flex items-center gap-3">
-              <i class="fa-solid fa-circle-check text-2xl text-emerald-600"></i>
-              <div>
-                <h4 class="font-bold text-lg">Ticket Submitted Successfully!</h4>
-                <p class="text-sm">Your Request ID is: <span class="font-mono font-bold bg-emerald-200 px-2 py-0.5 rounded text-emerald-900">${res.requestId}</span></p>
-                <p class="text-xs text-emerald-600 mt-1">Please save this ID to track status. A confirmation email will be sent shortly.</p>
-              </div>
-            </div>
-          `;
+          resDiv.className = "mt-6 p-4 bg-green-100 text-green-800 rounded-lg";
+          resDiv.innerHTML = "<strong>Success!</strong> Ticket ID: " + res.requestId;
           document.getElementById('ticketForm').reset();
         } else {
-          resultDiv.className = "mt-6 p-4 rounded-lg bg-rose-50 border border-rose-200 text-rose-800";
-          resultDiv.innerHTML = `<i class="fa-solid fa-circle-xmark"></i> <strong>Error:</strong> ${res.error}`;
+          resDiv.className = "mt-6 p-4 bg-red-100 text-red-800 rounded-lg";
+          resDiv.innerHTML = "<strong>Error:</strong> " + res.error;
         }
       } catch (err) {
-        resultDiv.className = "mt-6 p-4 rounded-lg bg-rose-50 border border-rose-200 text-rose-800";
-        resultDiv.innerHTML = `<i class="fa-solid fa-circle-xmark"></i> <strong>Network Error:</strong> Unable to connect to backend server.`;
+        resDiv.className = "mt-6 p-4 bg-red-100 text-red-800 rounded-lg";
+        resDiv.innerHTML = "<strong>Network Error:</strong> Check if your URL ends with /exec";
       } finally {
-        submitBtn.disabled = false;
-        submitBtn.innerHTML = `<i class="fa-solid fa-paper-plane"></i> Submit Request`;
-        resultDiv.classList.remove('hidden');
-      }
-    }
-
-    async function trackTicket() {
-      const reqId = document.getElementById('trackInput').value.trim();
-      const trackBtn = document.getElementById('trackBtn');
-      const resultDiv = document.getElementById('trackResult');
-
-      if (!reqId) return alert('Please enter a valid Request ID.');
-
-      trackBtn.disabled = true;
-      trackBtn.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> Checking...`;
-      resultDiv.classList.add('hidden');
-
-      try {
-        const response = await fetch(`${APPS_SCRIPT_URL}?action=track&requestId=${encodeURIComponent(reqId)}`);
-        const res = await response.json();
-
-        if (res.success) {
-          let statusBadge = 'bg-blue-100 text-blue-800';
-          if (res.status === 'Resolved' || res.status === 'Closed') statusBadge = 'bg-emerald-100 text-emerald-800';
-          if (res.status === 'In Progress') statusBadge = 'bg-amber-100 text-amber-800';
-
-          resultDiv.innerHTML = `
-            <div class="flex justify-between items-start mb-4">
-              <div>
-                <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Request ID</span>
-                <h3 class="text-xl font-bold font-mono text-indigo-700">${res.requestId}</h3>
-              </div>
-              <span class="px-3 py-1 rounded-full text-xs font-bold ${statusBadge}">${res.status || 'Received'}</span>
-            </div>
-            <div class="grid grid-cols-2 gap-4 text-sm">
-              <div><span class="text-slate-500">Category:</span> <p class="font-semibold">${res.category}</p></div>
-              <div><span class="text-slate-500">Priority:</span> <p class="font-semibold">${res.priority || 'Calculating...'}</p></div>
-              <div><span class="text-slate-500">Submitted At:</span> <p class="font-semibold">${new Date(res.createdAt).toLocaleString()}</p></div>
-              <div><span class="text-slate-500">Target Resolution:</span> <p class="font-semibold">${res.dueAt ? new Date(res.dueAt).toLocaleString() : 'Pending Assignment'}</p></div>
-            </div>
-          `;
-        } else {
-          resultDiv.innerHTML = `<div class="text-rose-600 font-semibold"><i class="fa-solid fa-circle-exclamation"></i> ${res.error}</div>`;
-        }
-      } catch (err) {
-        resultDiv.innerHTML = `<div class="text-rose-600 font-semibold"><i class="fa-solid fa-circle-exclamation"></i> Unable to fetch status.</div>`;
-      } finally {
-        trackBtn.disabled = false;
-        trackBtn.innerHTML = `<i class="fa-solid fa-magnifying-glass"></i> Track Ticket`;
-        resultDiv.classList.remove('hidden');
-      }
-    }
-
-    async function fetchActiveBanner() {
-      try {
-        const response = await fetch(`${APPS_SCRIPT_URL}?action=banner`);
-        const res = await response.json();
-        if (res.success && res.incidents && res.incidents.length > 0) {
-          const banner = document.getElementById('incidentBanner');
-          const bannerText = document.getElementById('bannerText');
-          const inc = res.incidents[0];
-          bannerText.innerText = `${inc.block} - ${inc.category}: ${inc.message || 'Under investigation by team.'} (ETA: ${inc.eta || 'TBD'})`;
-          banner.classList.remove('hidden');
-        }
-      } catch (err) {
-        // Silent fail for banner
+        btn.disabled = false;
+        btn.innerText = "Submit Request";
+        resDiv.classList.remove('hidden');
       }
     }
   </script>
