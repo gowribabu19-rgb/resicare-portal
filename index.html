@@ -169,23 +169,27 @@
       }
     }
 
-    // Submit Request (action=submit)
+        // Submit Request (action=submit)
     async function handleFormSubmit(e) {
       e.preventDefault();
       const btn = document.getElementById('submitBtn');
       btn.disabled = true;
       btn.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i> Submitting...`;
 
+      const codeVal = document.getElementById('accessCode').value.trim();
+
       const payload = {
-        name: document.getElementById('name').value,
-        email: document.getElementById('email').value,
-        phone: document.getElementById('phone').value,
+        name: document.getElementById('name').value.trim(),
+        email: document.getElementById('email').value.trim(),
+        phone: document.getElementById('phone').value.trim(),
         block: document.getElementById('block').value,
-        flat: document.getElementById('flat').value,
+        flat: document.getElementById('flat').value.trim(),
         category: document.getElementById('category').value,
         urgency: document.getElementById('urgency').value,
-        description: document.getElementById('description').value,
-        accessCode: document.getElementById('accessCode').value,
+        description: document.getElementById('description').value.trim(),
+        accessCode: codeVal,
+        access_code: codeVal,
+        requestType: "Individual Issue",
         website_trap: document.getElementById('website_trap').value
       };
 
@@ -194,14 +198,16 @@
         const res = await fetch(url);
         const data = await res.json();
 
-        if (data.status === 'success' || data.success) {
-          alert(`🎉 Ticket Submitted Successfully!\n\nYour Request ID: ${data.requestId}\nSave this ID to track your progress.`);
+        if (data.status === 'success' || data.success || data.requestId) {
+          const reqId = data.requestId || data.id || 'Submitted';
+          alert(`🎉 Ticket Submitted Successfully!\n\nYour Request ID: ${reqId}\nSave this ID to track your progress.`);
           document.getElementById('ticketForm').reset();
         } else {
-          alert(`❌ Submission Failed: ${data.message || 'Error submitting ticket'}`);
+          const errorMsg = data.message || data.error || data.msg || JSON.stringify(data);
+          alert(`❌ Submission Refused: ${errorMsg}`);
         }
       } catch (err) {
-        alert("❌ Error connecting to server. Please check your network.");
+        alert(`❌ Network Error: ${err.message}`);
       } finally {
         btn.disabled = false;
         btn.innerHTML = `<i class="fa-solid fa-paper-plane"></i> Submit Request`;
