@@ -253,20 +253,30 @@
       }
     }
 
-    // Fetch Active Incidents (action=banner)
+        // Fetch Active Incidents (action=banner) with Smart Deduplication
     async function fetchIncidents() {
       try {
         const url = `${APPS_SCRIPT_URL}?action=banner`;
         const res = await fetch(url);
         const data = await res.json();
 
-        const incidents = data.incidents || (Array.isArray(data) ? data : (data.incident ? [data.incident] : []));
-        if (incidents.length > 0) {
+        const rawIncidents = data.incidents || (Array.isArray(data) ? data : (data.incident ? [data.incident] : []));
+        
+        if (rawIncidents.length > 0) {
+          // Deduplicate by Block + Category (show only 1 banner per unique outage)
+          const uniqueIncidents = {};
+          rawIncidents.forEach(inc => {
+            const key = `${inc.block || inc.Block || 'All'}___${inc.category || inc.Category || 'General'}`;
+            if (!uniqueIncidents[key]) {
+              uniqueIncidents[key] = inc;
+            }
+          });
+
           const container = document.getElementById('bannerContainer');
           container.classList.remove('hidden');
           
           let bannerHtml = '';
-          incidents.forEach(inc => {
+          Object.values(uniqueIncidents).forEach(inc => {
             bannerHtml += `
               <div class="bg-rose-600 text-white p-4 rounded-lg shadow-md border-l-8 border-rose-900 flex items-start gap-3 mb-2">
                 <i class="fa-solid fa-triangle-exclamation text-2xl mt-1 text-amber-300"></i>
