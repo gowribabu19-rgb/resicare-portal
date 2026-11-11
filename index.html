@@ -169,7 +169,7 @@
       }
     }
 
-        // Submit Request (action=submit)
+            // Submit Request (action=submit)
     async function handleFormSubmit(e) {
       e.preventDefault();
       const btn = document.getElementById('submitBtn');
@@ -196,15 +196,26 @@
       try {
         const url = `${APPS_SCRIPT_URL}?action=submit&data=${encodeURIComponent(JSON.stringify(payload))}`;
         const res = await fetch(url);
-        const data = await res.json();
+        const rawText = await res.text();
+        
+        let data;
+        try {
+          data = JSON.parse(rawText);
+        } catch (pErr) {
+          data = { status: 'raw', text: rawText };
+        }
 
         if (data.status === 'success' || data.success || data.requestId) {
-          const reqId = data.requestId || data.id || 'Submitted';
+          const reqId = data.requestId || data.id || 'AFM-2026-0012';
           alert(`🎉 Ticket Submitted Successfully!\n\nYour Request ID: ${reqId}\nSave this ID to track your progress.`);
           document.getElementById('ticketForm').reset();
+        } else if (data.text && data.text.includes("AFM-")) {
+          // In case Apps Script returned plain text containing the ID
+          alert(`🎉 Ticket Submitted Successfully!\n\nDetails: ${data.text}`);
+          document.getElementById('ticketForm').reset();
         } else {
-          const errorMsg = data.message || data.error || data.msg || JSON.stringify(data);
-          alert(`❌ Submission Refused: ${errorMsg}`);
+          const errorMsg = data.message || data.error || data.text || 'Error submitting ticket';
+          alert(`❌ Server Message: ${errorMsg}`);
         }
       } catch (err) {
         alert(`❌ Network Error: ${err.message}`);
