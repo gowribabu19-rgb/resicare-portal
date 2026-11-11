@@ -26,7 +26,7 @@
 
   <main class="max-w-4xl mx-auto px-4 py-8">
 
-    <!-- LIVE INCIDENT BANNER CONTAINER (Auto-populated by Apps Script) -->
+    <!-- LIVE INCIDENT BANNER CONTAINER -->
     <div id="bannerContainer" class="mb-6 hidden"></div>
 
     <!-- Navigation Tabs -->
@@ -141,7 +141,7 @@
 
   <!-- JS SCRIPT ENGINE -->
   <script>
-    // ⚠️ PASTE YOUR GOOGLE APPS SCRIPT WEB APP URL HERE:
+    // ⚠️ PASTE YOUR GOOGLE APPS SCRIPT WEB APP URL BELOW:
     const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycby1bJQ7BcVFEzxBF9I6DO0gfqyX3c7lJrdMgPMcWZFRVrNPf5z7RCUm-pdt9zHbsC_S/exec";
 
     // Auto-fetch active incidents on page load
@@ -194,11 +194,11 @@
         const res = await fetch(url);
         const data = await res.json();
 
-        if (data.status === 'success') {
+        if (data.status === 'success' || data.success) {
           alert(`🎉 Ticket Submitted Successfully!\n\nYour Request ID: ${data.requestId}\nSave this ID to track your progress.`);
           document.getElementById('ticketForm').reset();
         } else {
-          alert(`❌ Submission Failed: ${data.message}`);
+          alert(`❌ Submission Failed: ${data.message || 'Error submitting ticket'}`);
         }
       } catch (err) {
         alert("❌ Error connecting to server. Please check your network.");
@@ -226,19 +226,20 @@
         const res = await fetch(url);
         const data = await res.json();
 
-        if (data.status === 'found') {
-          const t = data.ticket;
+        // Flexibly handle both "success: true" and "status: found"
+        if (data.success || data.status === 'found' || data.requestId) {
+          const t = data.ticket || data;
           resultDiv.innerHTML = `
             <div class="bg-slate-50 p-6 rounded-lg border border-slate-200">
               <div class="flex justify-between items-center mb-4">
-                <span class="text-sm font-bold text-slate-500 font-mono">${t.requestId}</span>
+                <span class="text-sm font-bold text-slate-500 font-mono">${t.requestId || requestId}</span>
                 <span class="px-3 py-1 rounded-full text-xs font-bold ${t.status === 'Resolved' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}">
-                  ${t.status}
+                  ${t.status || 'New'}
                 </span>
               </div>
               <div class="grid grid-cols-2 gap-4 text-sm">
-                <div><strong class="text-slate-600">Block / Flat:</strong> ${t.block}, Flat ${t.flat}</div>
-                <div><strong class="text-slate-600">Category:</strong> ${t.category}</div>
+                <div><strong class="text-slate-600">Category:</strong> ${t.category || 'N/A'}</div>
+                <div><strong class="text-slate-600">Priority:</strong> ${t.priority || 'Standard'}</div>
                 <div><strong class="text-slate-600">Assigned Team:</strong> ${t.team || 'Pending'}</div>
                 <div><strong class="text-slate-600">Due At:</strong> ${t.dueAt || 'N/A'}</div>
               </div>
@@ -259,19 +260,20 @@
         const res = await fetch(url);
         const data = await res.json();
 
-        if (data.status === 'success' && data.incidents && data.incidents.length > 0) {
+        const incidents = data.incidents || (Array.isArray(data) ? data : (data.incident ? [data.incident] : []));
+        if (incidents.length > 0) {
           const container = document.getElementById('bannerContainer');
           container.classList.remove('hidden');
           
           let bannerHtml = '';
-          data.incidents.forEach(inc => {
+          incidents.forEach(inc => {
             bannerHtml += `
               <div class="bg-rose-600 text-white p-4 rounded-lg shadow-md border-l-8 border-rose-900 flex items-start gap-3 mb-2">
                 <i class="fa-solid fa-triangle-exclamation text-2xl mt-1 text-amber-300"></i>
                 <div>
-                  <h3 class="font-bold text-md text-amber-200">LIVE BUILDING INCIDENT: ${inc.block} (${inc.category})</h3>
-                  <p class="text-sm text-rose-100 mt-1">${inc.message}</p>
-                  <div class="text-xs text-rose-200 mt-2"><strong>Status:</strong> ${inc.status} | <strong>ETA:</strong> ${inc.eta}</div>
+                  <h3 class="font-bold text-md text-amber-200">LIVE BUILDING INCIDENT: ${inc.block || inc.Block || 'All Blocks'} (${inc.category || inc.Category || 'General'})</h3>
+                  <p class="text-sm text-rose-100 mt-1">${inc.message || inc.Message || 'Major outage reported.'}</p>
+                  <div class="text-xs text-rose-200 mt-2"><strong>Status:</strong> ${inc.status || inc.Status || 'OPEN'} | <strong>ETA:</strong> ${inc.eta || inc.ETA || 'Under Repair'}</div>
                 </div>
               </div>
             `;
