@@ -141,15 +141,13 @@
 
   <!-- JS SCRIPT ENGINE -->
   <script>
-    // ⚠️ PASTE YOUR GOOGLE APPS SCRIPT WEB APP URL BELOW:
-    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycby1bJQ7BcVFEzxBF9I6DO0gfqyX3c7lJrdMgPMcWZFRVrNPf5z7RCUm-pdt9zHbsC_S/exec";
+    // ⚠️ PASTE YOUR NEW GOOGLE APPS SCRIPT WEB APP URL BELOW:
+    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwJEXKMeYUxTDAgKtgaSX_i63_IngXD9j3B4hpWMW45cf-o8oMO64pddJGGRBZ3SkUP/exec";
 
-    // Auto-fetch active incidents on page load
     document.addEventListener("DOMContentLoaded", () => {
       fetchIncidents();
     });
 
-    // Tab Switching Logic
     function switchTab(tab) {
       const tabRaise = document.getElementById('tabRaise');
       const tabTrack = document.getElementById('tabTrack');
@@ -169,16 +167,14 @@
       }
     }
 
-            // Submit Request (action=submit)
     async function handleFormSubmit(e) {
       e.preventDefault();
       const btn = document.getElementById('submitBtn');
       btn.disabled = true;
       btn.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i> Submitting...`;
 
-      const codeVal = document.getElementById('accessCode').value.trim();
-
-      const payload = {
+      const params = new URLSearchParams({
+        action: 'submit',
         name: document.getElementById('name').value.trim(),
         email: document.getElementById('email').value.trim(),
         phone: document.getElementById('phone').value.trim(),
@@ -187,35 +183,20 @@
         category: document.getElementById('category').value,
         urgency: document.getElementById('urgency').value,
         description: document.getElementById('description').value.trim(),
-        accessCode: codeVal,
-        access_code: codeVal,
-        requestType: "Individual Issue",
+        access_code: document.getElementById('accessCode').value.toUpperCase().trim(),
         website_trap: document.getElementById('website_trap').value
-      };
+      });
 
       try {
-        const url = `${APPS_SCRIPT_URL}?action=submit&data=${encodeURIComponent(JSON.stringify(payload))}`;
+        const url = `${APPS_SCRIPT_URL}?${params.toString()}`;
         const res = await fetch(url);
-        const rawText = await res.text();
-        
-        let data;
-        try {
-          data = JSON.parse(rawText);
-        } catch (pErr) {
-          data = { status: 'raw', text: rawText };
-        }
+        const data = await res.json();
 
-        if (data.status === 'success' || data.success || data.requestId) {
-          const reqId = data.requestId || data.id || 'AFM-2026-0012';
-          alert(`🎉 Ticket Submitted Successfully!\n\nYour Request ID: ${reqId}\nSave this ID to track your progress.`);
-          document.getElementById('ticketForm').reset();
-        } else if (data.text && data.text.includes("AFM-")) {
-          // In case Apps Script returned plain text containing the ID
-          alert(`🎉 Ticket Submitted Successfully!\n\nDetails: ${data.text}`);
+        if (data.success) {
+          alert(`🎉 Ticket Submitted Successfully!\n\nYour Request ID: ${data.requestId}\n\nSave this ID to track your status later.`);
           document.getElementById('ticketForm').reset();
         } else {
-          const errorMsg = data.message || data.error || data.text || 'Error submitting ticket';
-          alert(`❌ Server Message: ${errorMsg}`);
+          alert(`❌ Error: ${data.message || 'Could not submit ticket.'}`);
         }
       } catch (err) {
         alert(`❌ Network Error: ${err.message}`);
@@ -225,7 +206,6 @@
       }
     }
 
-    // Track Status (action=track)
     async function trackTicket() {
       const requestId = document.getElementById('trackIdInput').value.trim();
       const resultDiv = document.getElementById('trackResult');
@@ -243,50 +223,45 @@
         const res = await fetch(url);
         const data = await res.json();
 
-        // Flexibly handle both "success: true" and "status: found"
-        if (data.success || data.status === 'found' || data.requestId) {
-          const t = data.ticket || data;
+        if (data.success) {
           resultDiv.innerHTML = `
             <div class="bg-slate-50 p-6 rounded-lg border border-slate-200">
               <div class="flex justify-between items-center mb-4">
-                <span class="text-sm font-bold text-slate-500 font-mono">${t.requestId || requestId}</span>
-                <span class="px-3 py-1 rounded-full text-xs font-bold ${t.status === 'Resolved' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}">
-                  ${t.status || 'New'}
+                <span class="text-sm font-bold text-slate-500 font-mono">${data.requestId}</span>
+                <span class="px-3 py-1 rounded-full text-xs font-bold ${data.status === 'Resolved' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}">
+                  ${data.status || 'New'}
                 </span>
               </div>
               <div class="grid grid-cols-2 gap-4 text-sm">
-                <div><strong class="text-slate-600">Category:</strong> ${t.category || 'N/A'}</div>
-                <div><strong class="text-slate-600">Priority:</strong> ${t.priority || 'Standard'}</div>
-                <div><strong class="text-slate-600">Assigned Team:</strong> ${t.team || 'Pending'}</div>
-                <div><strong class="text-slate-600">Due At:</strong> ${t.dueAt || 'N/A'}</div>
+                <div><strong class="text-slate-600">Category:</strong> ${data.category || 'N/A'}</div>
+                <div><strong class="text-slate-600">Priority:</strong> ${data.priority || 'Pending'}</div>
+                <div><strong class="text-slate-600">Assigned Team:</strong> ${data.team || 'Pending'}</div>
+                <div><strong class="text-slate-600">Due At:</strong> ${data.dueAt || 'N/A'}</div>
               </div>
             </div>
           `;
         } else {
-          resultDiv.innerHTML = `<div class="p-4 bg-red-50 text-red-700 rounded-md border border-red-200"><i class="fa-solid fa-triangle-exclamation"></i> Ticket not found. Please double-check your Request ID.</div>`;
+          resultDiv.innerHTML = `<div class="p-4 bg-red-50 text-red-700 rounded-md border border-red-200"><i class="fa-solid fa-triangle-exclamation"></i> ${data.message || 'Ticket not found.'}</div>`;
         }
       } catch (err) {
         resultDiv.innerHTML = `<div class="p-4 bg-red-50 text-red-700 rounded-md">Error retrieving status.</div>`;
       }
     }
 
-        // Fetch Active Incidents (action=banner) with Smart Deduplication
     async function fetchIncidents() {
       try {
         const url = `${APPS_SCRIPT_URL}?action=banner`;
         const res = await fetch(url);
         const data = await res.json();
 
-        const rawIncidents = data.incidents || (Array.isArray(data) ? data : (data.incident ? [data.incident] : []));
+        const rawIncidents = data.incidents || [];
         
         if (rawIncidents.length > 0) {
-          // Deduplicate by Block + Category (show only 1 banner per unique outage)
+          // Deduplicate by Block + Category
           const uniqueIncidents = {};
           rawIncidents.forEach(inc => {
-            const key = `${inc.block || inc.Block || 'All'}___${inc.category || inc.Category || 'General'}`;
-            if (!uniqueIncidents[key]) {
-              uniqueIncidents[key] = inc;
-            }
+            const key = `${inc.block}___${inc.category}`;
+            if (!uniqueIncidents[key]) uniqueIncidents[key] = inc;
           });
 
           const container = document.getElementById('bannerContainer');
@@ -298,9 +273,9 @@
               <div class="bg-rose-600 text-white p-4 rounded-lg shadow-md border-l-8 border-rose-900 flex items-start gap-3 mb-2">
                 <i class="fa-solid fa-triangle-exclamation text-2xl mt-1 text-amber-300"></i>
                 <div>
-                  <h3 class="font-bold text-md text-amber-200">LIVE BUILDING INCIDENT: ${inc.block || inc.Block || 'All Blocks'} (${inc.category || inc.Category || 'General'})</h3>
-                  <p class="text-sm text-rose-100 mt-1">${inc.message || inc.Message || 'Major outage reported.'}</p>
-                  <div class="text-xs text-rose-200 mt-2"><strong>Status:</strong> ${inc.status || inc.Status || 'OPEN'} | <strong>ETA:</strong> ${inc.eta || inc.ETA || 'Under Repair'}</div>
+                  <h3 class="font-bold text-md text-amber-200">LIVE BUILDING INCIDENT: ${inc.block} (${inc.category})</h3>
+                  <p class="text-sm text-rose-100 mt-1">${inc.message}</p>
+                  <div class="text-xs text-rose-200 mt-2"><strong>Status:</strong> ${inc.status} | <strong>ETA:</strong> ${inc.eta}</div>
                 </div>
               </div>
             `;
@@ -308,7 +283,7 @@
           container.innerHTML = bannerHtml;
         }
       } catch (e) {
-        console.log("No active banner or API call skipped.");
+        console.log("No active banner.");
       }
     }
   </script>
